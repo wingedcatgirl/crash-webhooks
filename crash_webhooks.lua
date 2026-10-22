@@ -2,8 +2,8 @@
 
 CrashHooks = CrashHooks or {}
 
---#region So people can copy this file into their mod mostly unaltered, if they want to do that. (Not recommended, seems more likely to be kind of annoying than provide any kind of benefits over just including this mod.)
---If you want to get rid of this, you should have like, 102 level understanding of global tables in Lua at minimum.
+--#region So people can copy this file into their mod mostly unaltered, if they want to do that. (Not recommended, seems more likely to be kind of annoying than provide any kind of benefits over just running this mod in your dev environment. But I would like it to work if someone wants to try it.)
+--If you do want to get rid of this, you should have like, 102 level understanding of global tables in Lua at minimum.
 local this_mod = CrashHooks --Change CrashHooks here to your mod's global table.
 this_mod = this_mod or SMODS.current_mod --Fallback for people who can't read the comment above this one.
 local say = this_mod.say or function (msg)
@@ -16,6 +16,7 @@ say("Loading crash messages...", "TRACE")
 local http = require("SMODS.https")
 local json = require("json")
 
+--Automatically writes webhook file names to .git/info/exclude; probably not actually needed rn since the files end up going in the %appdata% folder, but I might make them go a less silly place in future.
 local gitfolder = SMODS.current_mod.path..".git/" --Change this if your git folder is in a weird place
 local exclude_file_path = gitfolder.."info/exclude"
 local exclude_entry = "*webhooks.txt"
@@ -36,9 +37,25 @@ else
     print".git folder isn't in the expected area, you're on your own."
 end
 
-local modder_names = {}
-for i, v in ipairs(SMODS.current_mod.author) do
-    modder_names[v] = true
+this_mod.add_modder_names = function (mod)
+    if not (mod and SMODS.Mods[mod]) then
+        print"Pass a valid mod ID!"
+        return
+    end
+
+    for i, v in ipairs(SMODS.Mods[mod].author) do
+        this_mod.config.modder_names[v] = true
+    end
+    SMODS.save_all_config()
+end
+this_mod.reset_modder_names = function ()
+    this_mod.config.modder_names = {}
+    SMODS.save_all_config()
+end
+this_mod.set_default_author= function (name)
+    if not name then print"Pass your name as the argument!";return end
+    this_mod.config.default_author = name
+    SMODS.save_all_config()
 end
 
 local function send_that_webhook(msg, target) --Designed for Discord webhooks. If you know what you're doing, you can edit this to interact with other webhooks instead.
@@ -113,7 +130,7 @@ function this_mod.read_hook_file(modname)
     return all_webhooks
 end
 
-local default_author = SMODS.current_mod.author[1]
+local default_author = this_mod.config.default_author
 
 function this_mod.creat_all_hook_files(author)
     author = author or default_author
@@ -133,7 +150,7 @@ function this_mod.creat_all_hook_files(author)
                 print"!!!"
                 print"!!!"
                 print"!!!"
-                print"WARNING! Unable to find or create an entry in .git/info/exclude for these files!\nPlease ensure, by whichever means you have available, that you don't make them public by mistake."
+                print"CAUTION! Unable to find or create an entry in .git/info/exclude for these files!\nPlease ensure, by whichever means you have available, that you don't make them public by mistake."
                 print"!!!"
                 print"!!!"
                 print"!!!"
@@ -152,7 +169,7 @@ love.errorhandler = function (msg)
     for k,v in pairs(SMODS.Mods) do
         local is_for_me = false
         for _,modder in ipairs(v.author or {}) do
-            if modder_names[modder] then
+            if this_mod.config.modder_names[modder] then
                 is_for_me = true
                 break
             end
