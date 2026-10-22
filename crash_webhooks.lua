@@ -4,7 +4,7 @@ CrashHooks = CrashHooks or {}
 
 --#region So people can copy this file into their mod mostly unaltered, if they want to do that. (Not recommended, seems more likely to be kind of annoying than provide any kind of benefits over just running this mod in your dev environment. But I would like it to work if someone wants to try it.)
 --If you do want to get rid of this, you should have like, 102 level understanding of global tables in Lua at minimum.
-local this_mod = CrashHooks --Change CrashHooks here to your mod's global table.
+local this_mod = CrashHooks --Change CrashHooks here to your mod's global table if you're copying the file.
 this_mod = this_mod or SMODS.current_mod --Fallback for people who can't read the comment above this one.
 local say = this_mod.say or function (msg)
     print(msg)
