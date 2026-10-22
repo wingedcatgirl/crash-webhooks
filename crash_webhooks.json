@@ -1,0 +1,16 @@
+{
+	"id": "CrashHooks",
+	"name": "Crash Webhooks",
+	"display_name": "CrashHooks",
+	"author": ["wingedcatgirl"],
+	"description": "Interact with a Discord webhook when your game crashes",
+	"prefix": "crashhooks",
+	"main_file": "crash_webhooks.lua",
+	"priority": 0,
+	"badge_colour": "CA7CA7",
+	"badge_text_colour": "FFFFFF",
+	"version": "1.0.0~BETA~20261022",
+	"dependencies": [
+		"Steamodded(>=1.0.0~BETA-1501a)"
+	]
+}
