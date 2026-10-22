@@ -88,7 +88,7 @@ function this_mod.webhook_test(mod, msg)
 end
 
 --Don't edit this text here. To be clear. Create the file, then edit the text in the file.
-local unedited_text = "After creating the webhook file, replace this text inside it with a return-separated list of webhook URLs.\nThey may (optionally) be followed by a pipe symbol | and a custom message.\nUse #modname# for the mod's name, #errmsg# for the error message, and #crashcount# for the number of times crashed so far."
+local unedited_text = "After creating the webhook file, replace this text inside it with a return-separated list of webhook URLs.\nThey may (optionally) be followed by a pipe symbol | and a custom message.\nUse #modname# to substitute in the mod's name, #errmsg# for the error that crashed the game, and #crashcount# for the number of times crashed so far."
 
 function this_mod.creat_hook_file(modname)
     NFS.write(modname.."_webhooks.txt", unedited_text)
