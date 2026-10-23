@@ -1,6 +1,6 @@
 -- Adapted from ivy real_niacat's code
 
-CrashHooks = CrashHooks or {}
+CrashHooks = SMODS.current_mod or {}
 
 --#region So people can copy this file into their mod mostly unaltered, if they want to do that. (Not recommended, seems more likely to be kind of annoying than provide any kind of benefits over just running this mod in your dev environment. But I would like it to work if someone wants to try it.)
 --If you do want to get rid of this, you should have like, 102 level understanding of global tables in Lua at minimum.
@@ -16,26 +16,34 @@ say("Loading crash messages...", "TRACE")
 local http = require("SMODS.https")
 local json = require("json")
 
+this_mod.config.modder_names = this_mod.config.modder_names or {}
+
+local excluded = {
+
+}
 --Automatically writes webhook file names to .git/info/exclude; probably not actually needed rn since the files end up going in the %appdata% folder, but I might make them go a less silly place in future.
-local gitfolder = SMODS.current_mod.path..".git/" --Change this if your git folder is in a weird place
-local exclude_file_path = gitfolder.."info/exclude"
-local exclude_entry = "*webhooks.txt"
-local excluded = false
-local gitfolderdata = NFS.getDirectoryItems(gitfolder)
-if gitfolderdata and next(gitfolderdata) then
-    for line in NFS.lines(exclude_file_path) do
-        if line == exclude_entry then
-            excluded = true
-            break
+local function write_exclude_entry(mod_id)
+    mod_id = mod_id or this_mod.id
+    local gitfolder = SMODS.Mods[mod_id].path..".git/" --Change this if your git folder is in a weird place
+    local exclude_file_path = gitfolder.."info/exclude"
+    local exclude_entry = "*webhooks.txt"
+    local gitfolderdata = NFS.getDirectoryItems(gitfolder)
+    if gitfolderdata and next(gitfolderdata) then
+        for line in NFS.lines(exclude_file_path) do
+            if line == exclude_entry then
+                excluded[mod_id] = true
+                break
+            end
         end
+        if not excluded[mod_id] then
+            NFS.write(exclude_file_path, NFS.read(exclude_file_path).."\n"..exclude_entry)
+            excluded[mod_id] = true
+        end
+    else
+        print".git folder isn't in the expected area, you're on your own."
     end
-    if not excluded then
-        NFS.write(exclude_file_path, NFS.read(exclude_file_path).."\n"..exclude_entry)
-        excluded = true
-    end
-else
-    print".git folder isn't in the expected area, you're on your own."
 end
+
 
 this_mod.add_modder_names = function (mod)
     if not (mod and SMODS.Mods[mod]) then
@@ -146,11 +154,12 @@ function this_mod.creat_all_hook_files(author)
 
         if is_for_me and not NFS.read(k.."_webhooks.txt") then
             print("Creating webhook file for mod "..k)
-            if not excluded then
+            write_exclude_entry(k)
+            if not excluded[k] then
                 print"!!!"
                 print"!!!"
                 print"!!!"
-                print"CAUTION! Unable to find or create an entry in .git/info/exclude for these files!\nPlease ensure, by whichever means you have available, that you don't make them public by mistake."
+                print("CAUTION! Unable to find or create an entry in .git/info/exclude for mod "..k.."!\nPlease ensure, by whichever means you have available, that you don't make this file public by mistake.")
                 print"!!!"
                 print"!!!"
                 print"!!!"
@@ -168,6 +177,7 @@ love.errorhandler = function (msg)
     --Ideally, figure out if specifically the mod that crashed has a webhook, instead of iterating through all of them? Currently this isn't 100% reliable though, crashes from using vanilla or SMODS functions wrong will often be blamed on vanilla or SMODS instead of the mod that did it.
     for k,v in pairs(SMODS.Mods) do
         local is_for_me = false
+        local modname = v.name or k
         for _,modder in ipairs(v.author or {}) do
             if this_mod.config.modder_names[modder] then
                 is_for_me = true
@@ -184,7 +194,7 @@ love.errorhandler = function (msg)
                 love.filesystem.write(crashcount_filename, tostring(crash_count))
 
                 for url,webmsg in pairs(webhook_list) do
-                    webmsg = webmsg:gsub("#modname#", v.name):gsub("#crashcount#", crash_count):gsub("#errmsg#", msg)
+                    webmsg = webmsg:gsub("#modname#", modname):gsub("#crashcount#", crash_count):gsub("#errmsg#", msg)
 
                     send_that_webhook(webmsg, url)
                 end
