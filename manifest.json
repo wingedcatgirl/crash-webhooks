@@ -1,5 +1,5 @@
 {
-  "name": "Crash Webhooks",
+  "name": "CrashWebhooks",
   "version_number": "1.0.0",
   "website_url": "https://github.com/wingedcatgirl/crash-webhooks",
   "description": "Interact with a Discord webhook when your mod crashes",
