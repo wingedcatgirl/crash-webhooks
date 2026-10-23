@@ -13,6 +13,12 @@ end
 
 say("Loading crash messages...", "TRACE")
 
+SMODS.Atlas{
+    path = "icon.png",
+    key = "modicon",
+    px = 34, py = 34
+}
+
 local http = require("SMODS.https")
 local json = require("json")
 
@@ -66,7 +72,7 @@ this_mod.set_default_author= function (name)
     SMODS.save_all_config()
 end
 
-local function send_that_webhook(msg, target) --Designed for Discord webhooks. If you know what you're doing, you can edit this to interact with other webhooks instead.
+local function send_that_webhook(msg, target) --Designed for Discord webhooks. If you know what you're doing, you can clone/edit this to interact with other webhooks instead.
     local data = {
         method = "POST",
         data = json.encode{content = msg},
@@ -74,13 +80,15 @@ local function send_that_webhook(msg, target) --Designed for Discord webhooks. I
             ["Content-Type"] = "application/json"
         }
     }
+    local res = {}
     if http then
-        return http.request(target, data)
-    else
+        res.code, res.body, res.headers = http.request(target, data)
+    end
+    if not http or type(res.code) ~= "number" or string.sub(tostring(res.code), 1, 1) ~= "2" then
         print("Oops! No HTTP! Don't worry, your good old buddy print has this covered:")
         print(msg)
-        return
     end
+    return res
 end
 
 function this_mod.webhook_test(mod, msg)
@@ -167,6 +175,11 @@ function this_mod.creat_all_hook_files(author)
             this_mod.creat_hook_file(k)
         end
     end
+end
+
+function this_mod.quick_init(author)
+    this_mod.config.modder_names[author] = true
+    this_mod.creat_all_hook_files(author)
 end
 
 local loveerrorhandler = love.errorhandler
