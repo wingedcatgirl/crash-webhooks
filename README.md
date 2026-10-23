@@ -12,7 +12,7 @@ If you know lua pretty well, you can look at [the source](https://github.com/win
 
 1. [Make your Discord webhook.](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 2. Eval `CrashHooks.quick_init("your name")`. Use the string you typed in the `author` field of your mod's metadata. (If you're doing this as a non-modder, [create a stub mod](https://docs.smods.dev/Guides/Your-First-Mod/) to hold your name; it doesn't need to actually do anything.)
-3. Open up %appdata% or equivalent, and then the "Balatro" folder inside there. For mod with your name in its `author` field, there should be a `[modname]_crashes.txt` file. Open the ones you care about and then follow the instructions inside. Delete the ones you don't care about. **Do not make these files public**; anyone can send a webhook request if they have the URL.
+3. Open up %appdata% or equivalent, and then the "Balatro" folder inside there. For mod with your name in its `author` field, there should be a `[modname]_webhooks.txt` file. Open the ones you care about and then follow the instructions inside. Delete the ones you don't care about. **Do not make these files public**; anyone can send a webhook request if they have the URL.
 
 Once you've done this, the webhook(s) will be sent every time Balatro crashes. Note that this is regardless of whether it's actually your mod responsible for the crash; detecting exactly which mod is at fault will never be 100% reliable and currently Crash Webhooks doesn't check at all.
 
