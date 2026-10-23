@@ -8,7 +8,7 @@ Interact with a Discord webhook when Balatro crashes. Comes with a deck to autom
 ## How to use
 **You'll need [DebugPlus](https://github.com/WilsontheWolf/DebugPlus) to execute relevant commands.**
 
-If you know lua pretty well, you can look at [the source](crash_webhooks.lua) and figure out what you want to do. For those who don't want to do that, further instructions follow.
+If you know lua pretty well, you can look at [the source](https://github.com/wingedcatgirl/crash-webhooks/blob/main/crash_webhooks.lua) and figure out what you want to do. For those who don't want to do that, further instructions follow.
 
 1. [Make your Discord webhook.](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 2. Eval `CrashHooks.quick_init("your name")`. Use the string you typed in the `author` field of your mod's metadata. (If you're doing this as a non-modder, [create a stub mod](https://docs.smods.dev/Guides/Your-First-Mod/) to hold your name; it doesn't need to actually do anything.)
